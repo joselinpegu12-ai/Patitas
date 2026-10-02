@@ -18,15 +18,30 @@ header h1 {
     margin: 0;
     font-size: 24px;
 }
+nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 nav a, nav span {
     color: white;
-    margin-left: 15px;
     text-decoration: none;
     font-weight: bold;
-    cursor: pointer;
 }
-nav a:hover {
-    text-decoration: underline;
+.nav-btn {
+    background-color: #2563eb;
+    padding: 8px 14px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.nav-btn:hover {
+    background-color: #1d4ed8;
+}
+.nav-logout {
+    background-color: #dc2626;
+}
+.nav-logout:hover {
+    background-color: #b91c1c;
 }
 .container {
     max-width: 1000px;
