@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CatalogoMascotas>
+  <Mascota>
+    <Id>1</Id>
+    <Nombre>Max</Nombre>
+    <Especie>Perro</Especie>
+    <Edad>2 años</Edad>
+    <Caracter>Juguetón y amigable</Caracter>
+    <Foto>https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400</Foto>
+  </Mascota>
+  <Mascota>
+    <Id>2</Id>
+    <Nombre>Luna</Nombre>
+    <Especie>Gato</Especie>
+    <Edad>1 año</Edad>
+    <Caracter>Tranquila y cariñosa</Caracter>
+    <Foto>https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400</Foto>
+  </Mascota>
+</CatalogoMascotas>
