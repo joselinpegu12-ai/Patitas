@@ -17,10 +17,28 @@ nav a {
     text-decoration: none;
     font-weight: bold;
 }
+nav a:hover {
+    text-decoration: underline;
+}
 .container {
     max-width: 1000px;
     margin: 30px auto;
     padding: 20px;
+}
+.filtros-box {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.filtros-box select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
 .grid-mascotas {
     display: grid;
@@ -32,6 +50,8 @@ nav a {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
 }
 .card img {
     width: 100%;
@@ -40,6 +60,10 @@ nav a {
 }
 .card-content {
     padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 form {
     background: white;
@@ -55,11 +79,12 @@ form {
     margin-bottom: 5px;
     font-weight: bold;
 }
-.form-group input, .form-group textarea {
+.form-group input, .form-group textarea, .form-group select {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 button {
     background-color: #2563eb;
@@ -68,7 +93,16 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-weight: bold;
 }
 button:hover {
     background-color: #1d4ed8;
+}
+.btn-adoptar {
+    background-color: #10b981;
+    width: 100%;
+    margin-top: 10px;
+}
+.btn-adoptar:hover {
+    background-color: #059669;
 }
