@@ -32,7 +32,29 @@
         <div class="grid-mascotas" id="gridMascotas"></div>
     </div>
 
+    <!-- Modal para mensajes limpios sin dominios -->
+    <div id="customModal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
     <script>
+        function mostrarMensaje(texto, callback = null) {
+            document.getElementById('modalMessage').textContent = texto;
+            document.getElementById('customModal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
         const mascotasDefault = [
             {
                 nombre: "Max",
@@ -69,7 +91,7 @@
             if (usuarioActivo) {
                 linkLogin.style.display = 'none';
                 linkLogout.style.display = 'inline-block';
-                // Solo mostrar el primer nombre
+                // Solo muestra el primer nombre
                 const primerNombre = usuarioActivo.nombre.trim().split(' ')[0];
                 userSpan.textContent = primerNombre;
                 
@@ -134,21 +156,22 @@
         function solicitarAdopcion(nombreMascota) {
             const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
             if (!usuarioActivo) {
-                alert("Debes iniciar sesión para poder solicitar una adopción.");
-                window.location.href = 'login.html';
+                mostrarMensaje("Debes iniciar sesión para poder solicitar una adopción.", () => {
+                    window.location.href = 'login.html';
+                });
                 return;
             }
 
             let solicitudes = JSON.parse(localStorage.getItem('patitas_solicitudes')) || [];
             solicitudes.push({
                 mascota: nombreMascota,
-                usuario: usuarioActivo.nombre,
+                usuario: `${usuarioActivo.nombre} ${usuarioActivo.appPaterno || ''}`,
                 email: usuarioActivo.email,
                 fecha: new Date().toLocaleDateString()
             });
             localStorage.setItem('patitas_solicitudes', JSON.stringify(solicitudes));
 
-            alert("Solicitud enviada. El administrador evaluará tu perfil para la adopción.");
+            mostrarMensaje("Solicitud enviada. El administrador evaluará tu perfil para la adopción.");
         }
 
         function eliminarMascota(index) {
@@ -162,8 +185,9 @@
 
         function cerrarSesion() {
             localStorage.removeItem('patitas_usuario_activo');
-            alert("Has cerrado sesión correctamente.");
-            window.location.href = 'index.html';
+            mostrarMensaje("Has cerrado sesión correctamente.", () => {
+                window.location.href = 'index.html';
+            });
         }
 
         window.onload = () => {
