@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración - Patitas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        img.admin-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .btn-aprobar {
+            background-color: #10b981;
+            padding: 6px 12px;
+            width: auto;
+        }
+        .btn-rechazar {
+            background-color: #dc2626;
+            padding: 6px 12px;
+            width: auto;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🐾 Panel de Administración</h1>
+        <nav>
+            <a href="index.html" class="nav-btn">Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Usuarios Registrados -->
+        <div class="admin-section">
+            <h3>👥 Usuarios Registrados en el Sistema</h3>
+            <div style="overflow-x: auto;">
+                <table id="tablaUsuarios">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Materno</th>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mascotas Pendientes de Evaluación -->
+        <div class="admin-section">
+            <h3>🐾 Mascotas Pendientes de Evaluación</h3>
+            <div style="overflow-x: auto;">
+                <table id="tablaPendientes">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Edad</th>
+                            <th>Carácter</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Solicitudes de Adopción -->
+        <div class="admin-section">
+            <h3>📋 Solicitudes de Adopción Recibidas</h3>
+            <div style="overflow-x: auto;">
+                <table id="tablaSolicitudes">
+                    <thead>
+                        <tr>
+                            <th>Mascota</th>
+                            <th>Usuario Solicitante</th>
+                            <th>Correo</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal personalizado -->
+    <div id="customModal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        function mostrarMensaje(texto, callback = null) {
+            document.getElementById('modalMessage').textContent = texto;
+            document.getElementById('customModal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
+        // Validar acceso exclusivo para administrador
+        const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+        if (!usuarioActivo || (usuarioActivo.email !== 'admin@patitas.com' && usuarioActivo.tipo !== 'Admin')) {
+            mostrarMensaje("Acceso restringido solo para administradores.", () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        function cargarDatosAdmin() {
+            // Cargar Usuarios
+            const usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
+            const tbodyUsuarios = document.querySelector('#tablaUsuarios tbody');
+            tbodyUsuarios.innerHTML = "";
+            usuarios.forEach(u => {
+                tbodyUsuarios.innerHTML += `
+                    <tr>
+                        <td>${u.nombre}</td>
+                        <td>${u.appPaterno || '-'}</td>
+                        <td>${u.appMaterno || '-'}</td>
+                        <td>${u.email}</td>
+                        <td>${u.tipo || 'Adoptante'}</td>
+                    </tr>
+                `;
+            });
+
+            // Cargar Mascotas Pendientes
+            const pendientes = JSON.parse(localStorage.getItem('patitas_mascotas_pendientes')) || [];
+            const tbodyPendientes = document.querySelector('#tablaPendientes tbody');
+            tbodyPendientes.innerHTML = "";
+            if (pendientes.length === 0) {
+                tbodyPendientes.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay mascotas pendientes de evaluación.</td></tr>`;
+            } else {
+                pendientes.forEach((m, index) => {
+                    tbodyPendientes.innerHTML += `
+                        <tr>
+                            <td><img src="${m.foto}" class="admin-img"></td>
+                            <td>${m.nombre}</td>
+                            <td>${m.especie}</td>
+                            <td>${m.edad}</td>
+                            <td>${m.caracter}</td>
+                            <td>
+                                <button class="btn-aprobar" onclick="aprobarMascota(${index})">Aprobar</button>
+                                <button class="btn-rechazar" onclick="rechazarMascota(${index})">Rechazar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Cargar Solicitudes
+            const solicitudes = JSON.parse(localStorage.getItem('patitas_solicitudes')) || [];
+            const tbodySolicitudes = document.querySelector('#tablaSolicitudes tbody');
+            tbodySolicitudes.innerHTML = "";
+            if (solicitudes.length === 0) {
+                tbodySolicitudes.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay solicitudes de adopción aún.</td></tr>`;
+            } else {
+                solicitudes.forEach(s => {
+                    tbodySolicitudes.innerHTML += `
+                        <tr>
+                            <td>${s.mascota}</td>
+                            <td>${s.usuario}</td>
+                            <td>${s.email}</td>
+                            <td>${s.fecha}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function aprobarMascota(index) {
+            let pendientes = JSON.parse(localStorage.getItem('patitas_mascotas_pendientes')) || [];
+            let mascotaAprobada = pendientes.splice(index, 1)[0];
+
+            let mascotasOficiales = JSON.parse(localStorage.getItem('patitas_mascotas')) || [];
+            mascotasOficiales.push(mascotaAprobada);
+
+            localStorage.setItem('patitas_mascotas_pendientes', JSON.stringify(pendientes));
+            localStorage.setItem('patitas_mascotas', JSON.stringify(mascotasOficiales));
+
+            mostrarMensaje("Mascota aprobada y publicada en la galería principal.", () => {
+                cargarDatosAdmin();
+            });
+        }
+
+        function rechazarMascota(index) {
+            let pendientes = JSON.parse(localStorage.getItem('patitas_mascotas_pendientes')) || [];
+            pendientes.splice(index, 1);
+            localStorage.setItem('patitas_mascotas_pendientes', JSON.stringify(pendientes));
+
+            mostrarMensaje("Mascota rechazada.", () => {
+                cargarDatosAdmin();
+            });
+        }
+
+        window.onload = cargarDatosAdmin;
+    </script>
+</body>
+</html>
