@@ -33,7 +33,29 @@
         </div>
     </div>
 
+    <!-- Modal personalizado -->
+    <div id="customModal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
     <script>
+        function mostrarMensaje(texto, callback = null) {
+            document.getElementById('modalMessage').textContent = texto;
+            document.getElementById('customModal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
         function iniciarSesion(event) {
             event.preventDefault();
             const email = document.getElementById('emailLogin').value;
@@ -53,7 +75,7 @@
                 localStorage.setItem('patitas_usuario_activo', JSON.stringify(encontrado));
                 window.location.href = 'index.html';
             } else {
-                alert("Correo o contraseña incorrectos.");
+                mostrarMensaje("Correo o contraseña incorrectos.");
             }
         }
     </script>
