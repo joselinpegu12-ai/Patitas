@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Patitas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🐾 Patitas</h1>
+        <nav>
+            <a href="index.html">Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="auth-box">
+            <h2>Iniciar Sesión</h2>
+            <form onsubmit="iniciarSesion(event)">
+                <div class="form-group">
+                    <label>Correo Electrónico:</label>
+                    <input type="email" id="emailLogin" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="passLogin" placeholder="********" required>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+            <div class="switch-link">
+                <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function iniciarSesion(event) {
+            event.preventDefault();
+            const email = document.getElementById('emailLogin').value;
+            const password = document.getElementById('passLogin').value;
+
+            let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
+            
+            // Cuenta por defecto para pruebas rápidas
+            if(email === "admin@patitas.com" && password === "123456") {
+                const adminUser = { nombre: "Administrador", email: email, tipo: "Admin" };
+                localStorage.setItem('patitas_usuario_activo', JSON.stringify(adminUser));
+                alert("¡Bienvenido Administrador!");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const encontrado = usuarios.find(u => u.email === email && u.password === password);
+            if (encontrado) {
+                localStorage.setItem('patitas_usuario_activo', JSON.stringify(encontrado));
+                alert(`¡Bienvenido de nuevo, ${encontrado.nombre}!`);
+                window.location.href = 'index.html';
+            } else {
+                alert("Correo o contraseña incorrectos.");
+            }
+        }
+    </script>
+</body>
+</html>
