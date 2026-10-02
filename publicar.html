@@ -9,7 +9,7 @@
     <header>
         <h1>🐾 Patitas</h1>
         <nav>
-            <a href="index.html">Inicio / Galería</a>
+            <a href="index.html" class="nav-btn">Inicio / Galería</a>
         </nav>
     </header>
 
@@ -40,15 +40,14 @@
                 <label>Foto de la mascota (PNG o JPG):</label>
                 <input type="file" id="fotoArchivo" accept="image/png, image/jpeg" required>
             </div>
-            <button type="submit">Publicar Mascota</button>
+            <button type="submit">Enviar a Evaluación</button>
         </form>
     </div>
 
     <script>
-        // Verificar que sea refugio o admin
         const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
         if (!usuarioActivo || (usuarioActivo.tipo !== 'Refugio' && usuarioActivo.tipo !== 'Admin')) {
-            alert("Acceso denegado. Solo los refugios pueden publicar mascotas.");
+            alert("Acceso denegado.");
             window.location.href = 'index.html';
         }
 
@@ -77,7 +76,7 @@
                     mascotas.push(nuevaMascota);
                     localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
 
-                    alert('¡Mascota publicada con éxito!');
+                    alert("La mascota ha sido enviada al administrador para su evaluación antes de publicarse.");
                     window.location.href = 'index.html';
                 };
                 reader.readAsDataURL(archivo);
