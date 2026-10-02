@@ -9,17 +9,17 @@
     <header>
         <h1>🐾 Patitas</h1>
         <nav>
-            <a href="index.html">Volver al Inicio</a>
+            <a href="index.html" class="nav-btn">Volver al Inicio</a>
         </nav>
     </header>
 
     <div class="container">
         <div class="auth-box">
-            <h2>Crear Cuenta Nueva</h2>
+            <h2>Registro de Adoptante</h2>
             <form onsubmit="registrarUsuario(event)">
                 <div class="form-group">
-                    <label>Nombre Completo:</label>
-                    <input type="text" id="nombreReg" placeholder="Ej. Juan Pérez" required>
+                    <label>Nombre:</label>
+                    <input type="text" id="nombreReg" placeholder="Ej. Juan" required>
                 </div>
                 <div class="form-group">
                     <label>Correo Electrónico:</label>
@@ -28,13 +28,6 @@
                 <div class="form-group">
                     <label>Contraseña:</label>
                     <input type="password" id="passReg" placeholder="********" required>
-                </div>
-                <div class="form-group">
-                    <label>Tipo de Cuenta:</label>
-                    <select id="tipoReg" required>
-                        <option value="Adoptante">Adoptante (Quiero adoptar)</option>
-                        <option value="Refugio">Refugio (Quiero publicar mascotas)</option>
-                    </select>
                 </div>
                 <button type="submit">Registrarse</button>
             </form>
@@ -50,23 +43,21 @@
             const nombre = document.getElementById('nombreReg').value;
             const email = document.getElementById('emailReg').value;
             const password = document.getElementById('passReg').value;
-            const tipo = document.getElementById('tipoReg').value;
 
             let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
             
-            // Verificar si ya existe
             if(usuarios.some(u => u.email === email)) {
                 alert("Este correo ya está registrado.");
                 return;
             }
 
-            const nuevoUsuario = { nombre, email, password, tipo };
+            // Tipo predeterminado como Adoptante
+            const nuevoUsuario = { nombre, email, password, tipo: "Adoptante" };
             usuarios.push(nuevoUsuario);
             localStorage.setItem('patitas_usuarios', JSON.stringify(usuarios));
-            localStorage.setItem('patitas_usuario_activo', JSON.stringify(nuevoUsuario));
 
-            alert(`¡Cuenta creada con éxito! Bienvenido, ${nombre}.`);
-            window.location.href = 'index.html';
+            alert("Registro enviado al administrador para su evaluación.");
+            window.location.href = 'login.html';
         }
     </script>
 </body>
