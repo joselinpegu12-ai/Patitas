@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Publicar Mascota - Patitas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🐾 Patitas</h1>
+        <p>Portal para Refugios</p>
+        <nav>
+            <a href="index.html">Inicio / Galería</a>
+            <a href="publicar.html">Publicar Mascota</a>
+        </nav>
+    </header>
+    <div class="container" style="max-width: 600px;">
+        <h2>Publicar una nueva mascota</h2>
+        <form>
+            <div class="form-group">
+                <label>Nombre de la mascota:</label>
+                <input type="text" placeholder="Ej. Rocky" required>
+            </div>
+            <div class="form-group">
+                <label>Especie:</label>
+                <input type="text" placeholder="Ej. Perro / Gato" required>
+            </div>
+            <div class="form-group">
+                <label>Edad:</label>
+                <input type="text" placeholder="Ej. 8 meses" required>
+            </div>
+            <div class="form-group">
+                <label>Carácter / Personalidad:</label>
+                <textarea rows="3" placeholder="Ej. Muy activo, convive bien con niños" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Enlace de la Foto (URL):</label>
+                <input type="url" placeholder="https://..." required>
+            </div>
+            <button type="submit">Publicar Mascota</button>
+        </form>
+    </div>
+</body>
+</html>
