@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>Registro - Patitas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo específico para centrar el título de la tarjeta */
+        .auth-box h2 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -15,7 +21,7 @@
 
     <div class="container">
         <div class="auth-box">
-            <h2>Registro de Adoptante</h2>
+            <h2>Registro</h2>
             <form onsubmit="registrarUsuario(event)">
                 <div class="form-group">
                     <label>Nombre:</label>
@@ -45,7 +51,7 @@
         </div>
     </div>
 
-    <!-- Modal personalizado -->
+    <!-- Modal personalizado para mensajes limpios -->
     <div id="customModal">
         <div class="modal-content">
             <p id="modalMessage"></p>
@@ -87,6 +93,7 @@
             usuarios.push(nuevoUsuario);
             localStorage.setItem('patitas_usuarios', JSON.stringify(usuarios));
 
+            // Al hacer clic en aceptar, redirige a login
             mostrarMensaje("Registro enviado al administrador para su evaluación.", () => {
                 window.location.href = 'login.html';
             });
