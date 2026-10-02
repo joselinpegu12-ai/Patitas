@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Iniciar Sesión - Patitas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-box h2 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -25,15 +30,15 @@
                     <label>Contraseña:</label>
                     <input type="password" id="passLogin" placeholder="********" required>
                 </div>
-                <button type="submit">Entrar</button>
+                <button type="submit">Ingresar</button>
             </form>
-            <div class="switch-link">
+            <div class="switch-link" style="margin-top: 15px; text-align: center;">
                 <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
             </div>
         </div>
     </div>
 
-    <!-- Modal personalizado -->
+    <!-- Modal personalizado para alertas limpias -->
     <div id="customModal">
         <div class="modal-content">
             <p id="modalMessage"></p>
@@ -58,22 +63,41 @@
 
         function iniciarSesion(event) {
             event.preventDefault();
-            const email = document.getElementById('emailLogin').value;
-            const password = document.getElementById('passLogin').value;
+            const email = document.getElementById('emailLogin').value.trim();
+            const password = document.getElementById('passLogin').value.trim();
 
-            let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
-            
-            if(email === "admin@patitas.com" && password === "123456") {
-                const adminUser = { nombre: "Administrador", email: email, tipo: "Admin" };
+            // Cuenta Administrador Principal predeterminada con tus datos
+            if (email === "joselinpegu12@gmail.com" && password === "1234") {
+                const adminUser = {
+                    nombre: "Joselin",
+                    appPaterno: "Admin",
+                    email: "joselinpegu12@gmail.com",
+                    tipo: "Admin"
+                };
                 localStorage.setItem('patitas_usuario_activo', JSON.stringify(adminUser));
-                window.location.href = 'index.html';
+                
+                // Asegurar que exista en la lista de usuarios
+                let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
+                if (!usuarios.some(u => u.email === email)) {
+                    usuarios.push(adminUser);
+                    localStorage.setItem('patitas_usuarios', JSON.stringify(usuarios));
+                }
+
+                mostrarMensaje("¡Bienvenida de vuelta, Joselin!", () => {
+                    window.location.href = 'index.html';
+                });
                 return;
             }
 
-            const encontrado = usuarios.find(u => u.email === email && u.password === password);
-            if (encontrado) {
-                localStorage.setItem('patitas_usuario_activo', JSON.stringify(encontrado));
-                window.location.href = 'index.html';
+            // Buscar en los usuarios registrados normalmente
+            let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
+            const usuarioEncontrado = usuarios.find(u => u.email === email && u.password === password);
+
+            if (usuarioEncontrado) {
+                localStorage.setItem('patitas_usuario_activo', JSON.stringify(usuarioEncontrado));
+                mostrarMensaje(`¡Bienvenido/a, ${usuarioEncontrado.nombre}!`, () => {
+                    window.location.href = 'index.html';
+                });
             } else {
                 mostrarMensaje("Correo o contraseña incorrectos.");
             }
