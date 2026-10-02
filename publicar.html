@@ -9,42 +9,47 @@
     <header>
         <h1>🐾 Patitas</h1>
         <nav>
-            <a href="index.html" class="nav-btn">Inicio / Galería</a>
+            <a href="index.html" class="nav-btn">Volver al Inicio</a>
         </nav>
     </header>
 
     <div class="container">
-        <h2>Publicar una nueva mascota</h2>
-        <form id="formPublicar" onsubmit="guardarMascota(event)">
+        <form onsubmit="registrarMascota(event)">
+            <h2>Publicar una nueva mascota</h2>
+            
             <div class="form-group">
                 <label>Nombre de la mascota:</label>
-                <input type="text" id="nombre" placeholder="Ej. Rocky" required>
+                <input type="text" id="nombreMascota" placeholder="Ej. Rocky" required>
             </div>
+
             <div class="form-group">
                 <label>Especie:</label>
-                <select id="especie" required>
-                    <option value="">Selecciona una especie</option>
+                <select id="especieMascota" required>
+                    <option value="">Selecciona...</option>
                     <option value="Perro">Perro</option>
                     <option value="Gato">Gato</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Edad:</label>
-                <input type="text" id="edad" placeholder="Ej. 8 meses o 2 años" required>
+                <input type="text" id="edadMascota" placeholder="Ej. 1 año" required>
             </div>
+
             <div class="form-group">
                 <label>Carácter / Personalidad:</label>
-                <textarea id="caracter" rows="3" placeholder="Ej. Muy activo, le gusta jugar" required></textarea>
+                <textarea id="caracterMascota" rows="3" placeholder="Ej. Juguetón, amigable..." required></textarea>
             </div>
+
             <div class="form-group">
                 <label>Foto de la mascota (PNG o JPG):</label>
-                <input type="file" id="fotoArchivo" accept="image/png, image/jpeg" required>
+                <input type="file" id="fotoMascota" accept="image/*" required>
             </div>
-            <button type="submit">Enviar a Evaluación</button>
+
+            <button type="submit">Publicar Mascota</button>
         </form>
     </div>
 
-    <!-- Modal personalizado -->
     <div id="customModal">
         <div class="modal-content">
             <p id="modalMessage"></p>
@@ -58,53 +63,48 @@
             document.getElementById('customModal').style.display = 'flex';
             window.modalCallback = callback;
         }
-
         function cerrarModal() {
             document.getElementById('customModal').style.display = 'none';
-            if (window.modalCallback) {
-                window.modalCallback();
-                window.modalCallback = null;
-            }
+            if (window.modalCallback) { window.modalCallback(); window.modalCallback = null; }
         }
 
         const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
-        if (!usuarioActivo || (usuarioActivo.tipo !== 'Refugio' && usuarioActivo.tipo !== 'Admin')) {
-            mostrarMensaje("Acceso denegado.", () => {
-                window.location.href = 'index.html';
+        if (!usuarioActivo) {
+            mostrarMensaje("Debes iniciar sesión para publicar.", () => {
+                window.location.href = 'login.html';
             });
         }
 
-        function guardarMascota(event) {
+        function registrarMascota(event) {
             event.preventDefault();
+            
+            const nombre = document.getElementById('nombreMascota').value.trim();
+            const especie = document.getElementById('especieMascota').value;
+            const edad = document.getElementById('edadMascota').value.trim();
+            const caracter = document.getElementById('caracterMascota').value.trim();
+            const inputFoto = document.getElementById('fotoMascota');
 
-            const nombre = document.getElementById('nombre').value;
-            const especie = document.getElementById('especie').value;
-            const edad = document.getElementById('edad').value;
-            const caracter = document.getElementById('caracter').value;
-            const archivoInput = document.getElementById('fotoArchivo');
-
-            const archivo = archivoInput.files[0];
+            const archivo = inputFoto.files[0];
             if (archivo) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const nuevaMascota = {
+                const lector = new FileReader();
+                lector.onload = function(e) {
+                    const base64Image = e.target.result;
+
+                    let mascotas = JSON.parse(localStorage.getItem('patitas_mascotas')) || [];
+                    mascotas.push({
                         nombre,
                         especie,
                         edad,
                         caracter,
-                        foto: e.target.result,
-                        estado: "Pendiente" // Se guarda en evaluación, no va directo a la galería principal
-                    };
+                        foto: base64Image
+                    });
+                    localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
 
-                    let pendientes = JSON.parse(localStorage.getItem('patitas_mascotas_pendientes')) || [];
-                    pendientes.push(nuevaMascota);
-                    localStorage.setItem('patitas_mascotas_pendientes', JSON.stringify(pendientes));
-
-                    mostrarMensaje("La mascota ha sido enviada al administrador para su evaluación antes de publicarse.", () => {
+                    mostrarMensaje("Mascota publicada con éxito.", () => {
                         window.location.href = 'index.html';
                     });
                 };
-                reader.readAsDataURL(archivo);
+                lector.readAsDataURL(archivo);
             }
         }
     </script>
