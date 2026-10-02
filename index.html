@@ -55,20 +55,21 @@
             }
         }
 
+        // Mascotas por defecto con iconos limpios en formato SVG / DataURI para no usar enlaces externos rotos
         const mascotasDefault = [
             {
                 nombre: "Max",
                 especie: "Perro",
                 edad: "2 años",
                 caracter: "Juguetón y muy amigable con niños.",
-                foto: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400"
+                foto: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'><rect width='100%' height='100%' fill='%23e2e8f0'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%2364748b'>🐶 Max (Perro)</text></svg>"
             },
             {
                 nombre: "Luna",
                 especie: "Gato",
                 edad: "1 año",
                 caracter: "Tranquila, independiente y cariñosa.",
-                foto: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400"
+                foto: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'><rect width='100%' height='100%' fill='%23e2e8f0'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%2364748b'>🐱 Luna (Gato)</text></svg>"
             }
         ];
 
@@ -91,12 +92,14 @@
             if (usuarioActivo) {
                 linkLogin.style.display = 'none';
                 linkLogout.style.display = 'inline-block';
-                // Solo muestra el primer nombre
                 const primerNombre = usuarioActivo.nombre.trim().split(' ')[0];
                 userSpan.textContent = primerNombre;
                 
-                if (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin') {
+                // SOLO aparece si es Refugio o Administrador
+                if (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin' || usuarioActivo.email === 'admin@patitas.com') {
                     linkPublicar.style.display = 'inline-block';
+                } else {
+                    linkPublicar.style.display = 'none';
                 }
             } else {
                 linkLogin.style.display = 'inline-block';
@@ -115,14 +118,8 @@
                 return;
             }
 
-            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
-
-            lista.forEach((m, index) => {
-                let botonesHTML = `<button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>`;
-                
-                if (usuarioActivo && (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin')) {
-                    botonesHTML += `<button class="btn-eliminar" onclick="eliminarMascota(${index})">Eliminar (Admin)</button>`;
-                }
+            lista.forEach((m) => {
+                const botonesHTML = `<button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>`;
 
                 grid.innerHTML += `
                     <div class="card">
@@ -172,15 +169,6 @@
             localStorage.setItem('patitas_solicitudes', JSON.stringify(solicitudes));
 
             mostrarMensaje("Solicitud enviada. El administrador evaluará tu perfil para la adopción.");
-        }
-
-        function eliminarMascota(index) {
-            if (confirm("¿Estás seguro de que deseas eliminar esta mascota?")) {
-                let mascotas = obtenerMascotas();
-                mascotas.splice(index, 1);
-                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
-                filtrarMascotas();
-            }
         }
 
         function cerrarSesion() {
