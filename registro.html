@@ -22,6 +22,14 @@
                     <input type="text" id="nombreReg" placeholder="Ej. Juan" required>
                 </div>
                 <div class="form-group">
+                    <label>Apellido Paterno:</label>
+                    <input type="text" id="appPaternoReg" placeholder="Ej. Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label>Apellido Materno:</label>
+                    <input type="text" id="appMaternoReg" placeholder="Ej. Gómez" required>
+                </div>
+                <div class="form-group">
                     <label>Correo Electrónico:</label>
                     <input type="email" id="emailReg" placeholder="tu@correo.com" required>
                 </div>
@@ -37,27 +45,51 @@
         </div>
     </div>
 
+    <!-- Modal personalizado -->
+    <div id="customModal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
     <script>
+        function mostrarMensaje(texto, callback = null) {
+            document.getElementById('modalMessage').textContent = texto;
+            document.getElementById('customModal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
         function registrarUsuario(event) {
             event.preventDefault();
             const nombre = document.getElementById('nombreReg').value;
+            const appPaterno = document.getElementById('appPaternoReg').value;
+            const appMaterno = document.getElementById('appMaternoReg').value;
             const email = document.getElementById('emailReg').value;
             const password = document.getElementById('passReg').value;
 
             let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
             
             if(usuarios.some(u => u.email === email)) {
-                alert("Este correo ya está registrado.");
+                mostrarMensaje("Este correo ya está registrado.");
                 return;
             }
 
-            // Tipo predeterminado como Adoptante
-            const nuevoUsuario = { nombre, email, password, tipo: "Adoptante" };
+            const nuevoUsuario = { nombre, appPaterno, appMaterno, email, password, tipo: "Adoptante" };
             usuarios.push(nuevoUsuario);
             localStorage.setItem('patitas_usuarios', JSON.stringify(usuarios));
 
-            alert("Registro enviado al administrador para su evaluación.");
-            window.location.href = 'login.html';
+            mostrarMensaje("Registro enviado al administrador para su evaluación.", () => {
+                window.location.href = 'login.html';
+            });
         }
     </script>
 </body>
