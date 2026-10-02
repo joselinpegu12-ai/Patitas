@@ -9,13 +9,21 @@ header {
     background-color: #1e3a8a;
     color: white;
     padding: 20px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
-nav a {
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+nav a, nav span {
     color: white;
-    margin: 0 15px;
+    margin-left: 15px;
     text-decoration: none;
     font-weight: bold;
+    cursor: pointer;
 }
 nav a:hover {
     text-decoration: underline;
@@ -65,11 +73,13 @@ nav a:hover {
     flex-direction: column;
     justify-content: space-between;
 }
-form {
+form, .auth-box {
     background: white;
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 0 auto;
 }
 .form-group {
     margin-bottom: 15px;
@@ -94,15 +104,31 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    width: 100%;
 }
 button:hover {
     background-color: #1d4ed8;
 }
 .btn-adoptar {
     background-color: #10b981;
-    width: 100%;
     margin-top: 10px;
 }
 .btn-adoptar:hover {
     background-color: #059669;
+}
+.btn-eliminar {
+    background-color: #dc2626;
+    margin-top: 5px;
+}
+.btn-eliminar:hover {
+    background-color: #b91c1c;
+}
+.switch-link {
+    text-align: center;
+    margin-top: 15px;
+}
+.switch-link a {
+    color: #2563eb;
+    cursor: pointer;
+    text-decoration: underline;
 }
