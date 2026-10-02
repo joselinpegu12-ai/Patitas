@@ -8,37 +8,78 @@
 <body>
     <header>
         <h1>🐾 Patitas</h1>
-        <p>Portal para Refugios</p>
+        <p>Portal exclusivo para Refugios</p>
         <nav>
             <a href="index.html">Inicio / Galería</a>
             <a href="publicar.html">Publicar Mascota</a>
         </nav>
     </header>
+
     <div class="container" style="max-width: 600px;">
         <h2>Publicar una nueva mascota</h2>
-        <form>
+        <form id="formPublicar" onsubmit="guardarMascota(event)">
             <div class="form-group">
                 <label>Nombre de la mascota:</label>
-                <input type="text" placeholder="Ej. Rocky" required>
+                <input type="text" id="nombre" placeholder="Ej. Rocky" required>
             </div>
             <div class="form-group">
                 <label>Especie:</label>
-                <input type="text" placeholder="Ej. Perro / Gato" required>
+                <select id="especie" required>
+                    <option value="">Selecciona una especie</option>
+                    <option value="Perro">Perro</option>
+                    <option value="Gato">Gato</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Edad:</label>
-                <input type="text" placeholder="Ej. 8 meses" required>
+                <input type="text" id="edad" placeholder="Ej. 8 meses o 2 años" required>
             </div>
             <div class="form-group">
                 <label>Carácter / Personalidad:</label>
-                <textarea rows="3" placeholder="Ej. Muy activo, convive bien con niños" required></textarea>
+                <textarea id="caracter" rows="3" placeholder="Ej. Muy activo, le gusta jugar con la pelota" required></textarea>
             </div>
             <div class="form-group">
-                <label>Enlace de la Foto (URL):</label>
-                <input type="url" placeholder="https://..." required>
+                <label>Foto de la mascota (Sube una imagen PNG o JPG):</label>
+                <input type="file" id="fotoArchivo" accept="image/png, image/jpeg" required>
             </div>
             <button type="submit">Publicar Mascota</button>
         </form>
     </div>
+
+    <script>
+        function guardarMascota(event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const especie = document.getElementById('especie').value;
+            const edad = document.getElementById('edad').value;
+            const caracter = document.getElementById('caracter').value;
+            const archivoInput = document.getElementById('fotoArchivo');
+
+            const archivo = archivoInput.files[0];
+            if (archivo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result; // Convierte la imagen a código para guardarla
+
+                    const nuevaMascota = {
+                        nombre,
+                        especie,
+                        edad,
+                        caracter,
+                        foto: base64Image
+                    };
+
+                    let mascotas = JSON.parse(localStorage.getItem('patitas_mascotas')) || [];
+                    mascotas.push(nuevaMascota);
+                    localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
+
+                    alert('¡Mascota publicada con éxito!');
+                    window.location.href = 'index.html'; // Regresar a la galería
+                };
+                reader.readAsDataURL(archivo);
+            }
+        }
+    </script>
 </body>
 </html>
