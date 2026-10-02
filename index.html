@@ -1,4 +1,90 @@
-function mostrarMascotas(lista) {
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Patitas - Plataforma de Adopción</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🐾 Patitas</h1>
+        <nav id="navBar">
+            <a href="index.html">Inicio</a>
+            <a href="publicar.html" id="linkPublicar" style="display:none;">Publicar Mascota</a>
+            <span id="userSpan"></span>
+            <a href="login.html" id="linkLogin">Iniciar Sesión</a>
+            <a href="#" id="linkLogout" onclick="cerrarSesion()" style="display:none;">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Mascotas buscando un hogar</h2>
+        
+        <!-- Filtros -->
+        <div class="filtros-box">
+            <label for="filtroEspecie"><strong>Filtrar por especie:</strong></label>
+            <select id="filtroEspecie" onchange="filtrarMascotas()">
+                <option value="todos">Todos</option>
+                <option value="Perro">Perros</option>
+                <option value="Gato">Gatos</option>
+            </select>
+        </div>
+
+        <!-- Contenedor dinámico de mascotas -->
+        <div class="grid-mascotas" id="gridMascotas"></div>
+    </div>
+
+    <script>
+        const mascotasDefault = [
+            {
+                nombre: "Max",
+                especie: "Perro",
+                edad: "2 años",
+                caracter: "Juguetón y muy amigable con niños.",
+                foto: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400"
+            },
+            {
+                nombre: "Luna",
+                especie: "Gato",
+                edad: "1 año",
+                caracter: "Tranquila, independiente y cariñosa.",
+                foto: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400"
+            }
+        ];
+
+        function obtenerMascotas() {
+            let guardadas = JSON.parse(localStorage.getItem('patitas_mascotas'));
+            if (!guardadas || guardadas.length === 0) {
+                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotasDefault));
+                return mascotasDefault;
+            }
+            return guardadas;
+        }
+
+        function verificarSesion() {
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+            const linkLogin = document.getElementById('linkLogin');
+            const linkLogout = document.getElementById('linkLogout');
+            const linkPublicar = document.getElementById('linkPublicar');
+            const userSpan = document.getElementById('userSpan');
+
+            if (usuarioActivo) {
+                linkLogin.style.display = 'none';
+                linkLogout.style.display = 'inline';
+                userSpan.textContent = `Hola, ${usuarioActivo.nombre} (${usuarioActivo.tipo})`;
+                
+                if (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin') {
+                    linkPublicar.style.display = 'inline';
+                }
+            } else {
+                linkLogin.style.display = 'inline';
+                linkLogout.style.display = 'none';
+                userSpan.textContent = '';
+                linkPublicar.style.display = 'none';
+            }
+        }
+
+        function mostrarMascotas(lista) {
             const grid = document.getElementById('gridMascotas');
             grid.innerHTML = "";
             
@@ -7,7 +93,16 @@ function mostrarMascotas(lista) {
                 return;
             }
 
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+
             lista.forEach((m, index) => {
+                let botonesHTML = `<button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>`;
+                
+                // Si es refugio o admin, puede eliminar
+                if (usuarioActivo && (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin')) {
+                    botonesHTML += `<button class="btn-eliminar" onclick="eliminarMascota(${index})">Eliminar (Admin)</button>`;
+                }
+
                 grid.innerHTML += `
                     <div class="card">
                         <img src="${m.foto}" alt="${m.nombre}">
@@ -18,21 +113,65 @@ function mostrarMascotas(lista) {
                                 <p><strong>Edad:</strong> ${m.edad}</p>
                                 <p><strong>Carácter:</strong> ${m.caracter}</p>
                             </div>
-                            <div>
-                                <button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>
-                                <button class="btn-eliminar" onclick="eliminarMascota(${index})" style="background-color: #dc2626; margin-top: 5px; width: 100%;">Eliminar (Admin)</button>
-                            </div>
+                            <div>${botonesHTML}</div>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function eliminarMascota(index) {
-            if (confirm("¿Estás seguro de que deseas eliminar esta mascota de la plataforma?")) {
-                let mascotas = obtenerMascotas();
-                mascotas.splice(index, 1); // Elimina el elemento de la lista
-                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas)); // Actualiza la memoria local
-                filtrarMascotas(); // Recarga la galería
+        function filtrarMascotas() {
+            const especieSeleccionada = document.getElementById('filtroEspecie').value;
+            const mascotas = obtenerMascotas();
+            
+            if (especieSeleccionada === 'todos') {
+                mostrarMascotas(mascotas);
+            } else {
+                const filtradas = mascotas.filter(m => m.especie === especieSeleccionada);
+                mostrarMascotas(filtradas);
             }
         }
+
+        function solicitarAdopcion(nombreMascota) {
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+            if (!usuarioActivo) {
+                alert("Debes iniciar sesión para poder solicitar una adopción y que el refugio pueda contactarte.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Guardar solicitud
+            let solicitudes = JSON.parse(localStorage.getItem('patitas_solicitudes')) || [];
+            solicitudes.push({
+                mascota: nombreMascota,
+                usuario: usuarioActivo.nombre,
+                email: usuarioActivo.email,
+                fecha: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('patitas_solicitudes', JSON.stringify(solicitudes));
+
+            alert(`¡Solicitud enviada con éxito, ${usuarioActivo.nombre}! El refugio se pondrá en contacto contigo a través de ${usuarioActivo.email}.`);
+        }
+
+        function eliminarMascota(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar esta mascota?")) {
+                let mascotas = obtenerMascotas();
+                mascotas.splice(index, 1);
+                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
+                filtrarMascotas();
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('patitas_usuario_activo');
+            alert("Has cerrado sesión correctamente.");
+            window.location.href = 'index.html';
+        }
+
+        window.onload = () => {
+            verificarSesion();
+            mostrarMascotas(obtenerMascotas());
+        };
+    </script>
+</body>
+</html>
