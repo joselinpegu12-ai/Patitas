@@ -1,176 +1,175 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-    padding: 0;
-    color: #333;
-}
-header {
-    background-color: #1e3a8a;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-header h1 {
-    margin: 0;
-    font-size: 24px;
-}
-nav {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-nav a, nav span {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.nav-btn {
-    background-color: #2563eb;
-    padding: 8px 14px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-.nav-btn:hover {
-    background-color: #1d4ed8;
-}
-.nav-logout {
-    background-color: #dc2626;
-}
-.nav-logout:hover {
-    background-color: #b91c1c;
-}
-.container {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 20px;
-}
-.filtros-box {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-.filtros-box select {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-.grid-mascotas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-.card {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-}
-.card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-.card-content {
-    padding: 15px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-form, .auth-box, .eval-box {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    max-width: 500px;
-    margin: 0 auto;
-}
-.form-group {
-    margin-bottom: 15px;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-.form-group input, .form-group textarea, .form-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-button {
-    background-color: #2563eb;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 100%;
-}
-button:hover {
-    background-color: #1d4ed8;
-}
-.btn-adoptar {
-    background-color: #10b981;
-    margin-top: 10px;
-}
-.btn-adoptar:hover {
-    background-color: #059669;
-}
-.btn-eliminar {
-    background-color: #dc2626;
-    margin-top: 5px;
-}
-.btn-eliminar:hover {
-    background-color: #b91c1c;
-}
-.btn-aprobar {
-    background-color: #10b981;
-    margin-top: 5px;
-}
-.switch-link {
-    text-align: center;
-    margin-top: 15px;
-}
-.switch-link a {
-    color: #2563eb;
-    cursor: pointer;
-    text-decoration: underline;
-}
-/* Modal Personalizado para evitar alertas con dominio */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    width: 350px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Patitas - Plataforma de Adopción</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🐾 Patitas</h1>
+        <nav id="navBar">
+            <a href="index.html" class="nav-btn">Inicio</a>
+            <a href="publicar.html" id="linkPublicar" class="nav-btn" style="display:none;">Publicar Mascota</a>
+            <span id="userSpan" style="font-weight: bold; margin-left: 10px;"></span>
+            <a href="login.html" id="linkLogin" class="nav-btn">Iniciar Sesión</a>
+            <a href="#" id="linkLogout" class="nav-btn nav-logout" onclick="cerrarSesion()" style="display:none;">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Mascotas buscando un hogar</h2>
+        
+        <div class="filtros-box">
+            <label for="filtroEspecie"><strong>Filtrar por especie:</strong></label>
+            <select id="filtroEspecie" onchange="filtrarMascotas()">
+                <option value="todos">Todos</option>
+                <option value="Perro">Perros</option>
+                <option value="Gato">Gatos</option>
+            </select>
+        </div>
+
+        <div class="grid-mascotas" id="gridMascotas"></div>
+    </div>
+
+    <script>
+        const mascotasDefault = [
+            {
+                nombre: "Max",
+                especie: "Perro",
+                edad: "2 años",
+                caracter: "Juguetón y muy amigable con niños.",
+                foto: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400"
+            },
+            {
+                nombre: "Luna",
+                especie: "Gato",
+                edad: "1 año",
+                caracter: "Tranquila, independiente y cariñosa.",
+                foto: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400"
+            }
+        ];
+
+        function obtenerMascotas() {
+            let guardadas = JSON.parse(localStorage.getItem('patitas_mascotas'));
+            if (!guardadas || guardadas.length === 0) {
+                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotasDefault));
+                return mascotasDefault;
+            }
+            return guardadas;
+        }
+
+        function verificarSesion() {
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+            const linkLogin = document.getElementById('linkLogin');
+            const linkLogout = document.getElementById('linkLogout');
+            const linkPublicar = document.getElementById('linkPublicar');
+            const userSpan = document.getElementById('userSpan');
+
+            if (usuarioActivo) {
+                linkLogin.style.display = 'none';
+                linkLogout.style.display = 'inline-block';
+                // Solo mostrar el primer nombre
+                const primerNombre = usuarioActivo.nombre.trim().split(' ')[0];
+                userSpan.textContent = primerNombre;
+                
+                if (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin') {
+                    linkPublicar.style.display = 'inline-block';
+                }
+            } else {
+                linkLogin.style.display = 'inline-block';
+                linkLogout.style.display = 'none';
+                userSpan.textContent = '';
+                linkPublicar.style.display = 'none';
+            }
+        }
+
+        function mostrarMascotas(lista) {
+            const grid = document.getElementById('gridMascotas');
+            grid.innerHTML = "";
+            
+            if (lista.length === 0) {
+                grid.innerHTML = "<p>No hay mascotas registradas con ese filtro.</p>";
+                return;
+            }
+
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+
+            lista.forEach((m, index) => {
+                let botonesHTML = `<button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>`;
+                
+                if (usuarioActivo && (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin')) {
+                    botonesHTML += `<button class="btn-eliminar" onclick="eliminarMascota(${index})">Eliminar (Admin)</button>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${m.foto}" alt="${m.nombre}">
+                        <div class="card-content">
+                            <div>
+                                <h3>${m.nombre}</h3>
+                                <p><strong>Especie:</strong> ${m.especie}</p>
+                                <p><strong>Edad:</strong> ${m.edad}</p>
+                                <p><strong>Carácter:</strong> ${m.caracter}</p>
+                            </div>
+                            <div>${botonesHTML}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrarMascotas() {
+            const especieSeleccionada = document.getElementById('filtroEspecie').value;
+            const mascotas = obtenerMascotas();
+            
+            if (especieSeleccionada === 'todos') {
+                mostrarMascotas(mascotas);
+            } else {
+                const filtradas = mascotas.filter(m => m.especie === especieSeleccionada);
+                mostrarMascotas(filtradas);
+            }
+        }
+
+        function solicitarAdopcion(nombreMascota) {
+            const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+            if (!usuarioActivo) {
+                alert("Debes iniciar sesión para poder solicitar una adopción.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            let solicitudes = JSON.parse(localStorage.getItem('patitas_solicitudes')) || [];
+            solicitudes.push({
+                mascota: nombreMascota,
+                usuario: usuarioActivo.nombre,
+                email: usuarioActivo.email,
+                fecha: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('patitas_solicitudes', JSON.stringify(solicitudes));
+
+            alert("Solicitud enviada. El administrador evaluará tu perfil para la adopción.");
+        }
+
+        function eliminarMascota(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar esta mascota?")) {
+                let mascotas = obtenerMascotas();
+                mascotas.splice(index, 1);
+                localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
+                filtrarMascotas();
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('patitas_usuario_activo');
+            alert("Has cerrado sesión correctamente.");
+            window.location.href = 'index.html';
+        }
+
+        window.onload = () => {
+            verificarSesion();
+            mostrarMascotas(obtenerMascotas());
+        };
+    </script>
+</body>
+</html>
