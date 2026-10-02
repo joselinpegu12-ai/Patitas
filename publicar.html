@@ -44,11 +44,34 @@
         </form>
     </div>
 
+    <!-- Modal personalizado -->
+    <div id="customModal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
     <script>
+        function mostrarMensaje(texto, callback = null) {
+            document.getElementById('modalMessage').textContent = texto;
+            document.getElementById('customModal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
         const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
         if (!usuarioActivo || (usuarioActivo.tipo !== 'Refugio' && usuarioActivo.tipo !== 'Admin')) {
-            alert("Acceso denegado.");
-            window.location.href = 'index.html';
+            mostrarMensaje("Acceso denegado.", () => {
+                window.location.href = 'index.html';
+            });
         }
 
         function guardarMascota(event) {
@@ -69,15 +92,17 @@
                         especie,
                         edad,
                         caracter,
-                        foto: e.target.result
+                        foto: e.target.result,
+                        estado: "Pendiente" // Se guarda en evaluación, no va directo a la galería principal
                     };
 
-                    let mascotas = JSON.parse(localStorage.getItem('patitas_mascotas')) || [];
-                    mascotas.push(nuevaMascota);
-                    localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
+                    let pendientes = JSON.parse(localStorage.getItem('patitas_mascotas_pendientes')) || [];
+                    pendientes.push(nuevaMascota);
+                    localStorage.setItem('patitas_mascotas_pendientes', JSON.stringify(pendientes));
 
-                    alert("La mascota ha sido enviada al administrador para su evaluación antes de publicarse.");
-                    window.location.href = 'index.html';
+                    mostrarMensaje("La mascota ha sido enviada al administrador para su evaluación antes de publicarse.", () => {
+                        window.location.href = 'index.html';
+                    });
                 };
                 reader.readAsDataURL(archivo);
             }
