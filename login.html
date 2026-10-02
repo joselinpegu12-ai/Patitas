@@ -9,7 +9,7 @@
     <header>
         <h1>🐾 Patitas</h1>
         <nav>
-            <a href="index.html">Volver al Inicio</a>
+            <a href="index.html" class="nav-btn">Volver al Inicio</a>
         </nav>
     </header>
 
@@ -41,11 +41,9 @@
 
             let usuarios = JSON.parse(localStorage.getItem('patitas_usuarios')) || [];
             
-            // Cuenta por defecto para pruebas rápidas
             if(email === "admin@patitas.com" && password === "123456") {
                 const adminUser = { nombre: "Administrador", email: email, tipo: "Admin" };
                 localStorage.setItem('patitas_usuario_activo', JSON.stringify(adminUser));
-                alert("¡Bienvenido Administrador!");
                 window.location.href = 'index.html';
                 return;
             }
@@ -53,7 +51,6 @@
             const encontrado = usuarios.find(u => u.email === email && u.password === password);
             if (encontrado) {
                 localStorage.setItem('patitas_usuario_activo', JSON.stringify(encontrado));
-                alert(`¡Bienvenido de nuevo, ${encontrado.nombre}!`);
                 window.location.href = 'index.html';
             } else {
                 alert("Correo o contraseña incorrectos.");
