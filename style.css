@@ -88,7 +88,7 @@ nav a, nav span {
     flex-direction: column;
     justify-content: space-between;
 }
-form, .auth-box, .eval-box {
+form, .auth-box {
     background: white;
     padding: 25px;
     border-radius: 8px;
@@ -138,10 +138,6 @@ button:hover {
 .btn-eliminar:hover {
     background-color: #b91c1c;
 }
-.btn-aprobar {
-    background-color: #10b981;
-    margin-top: 5px;
-}
 .switch-link {
     text-align: center;
     margin-top: 15px;
@@ -151,27 +147,3 @@ button:hover {
     cursor: pointer;
     text-decoration: underline;
 }
-/* Modal Personalizado para evitar alertas con dominio */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    width: 350px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
