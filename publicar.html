@@ -8,14 +8,12 @@
 <body>
     <header>
         <h1>🐾 Patitas</h1>
-        <p>Portal exclusivo para Refugios</p>
         <nav>
             <a href="index.html">Inicio / Galería</a>
-            <a href="publicar.html">Publicar Mascota</a>
         </nav>
     </header>
 
-    <div class="container" style="max-width: 600px;">
+    <div class="container">
         <h2>Publicar una nueva mascota</h2>
         <form id="formPublicar" onsubmit="guardarMascota(event)">
             <div class="form-group">
@@ -36,10 +34,10 @@
             </div>
             <div class="form-group">
                 <label>Carácter / Personalidad:</label>
-                <textarea id="caracter" rows="3" placeholder="Ej. Muy activo, le gusta jugar con la pelota" required></textarea>
+                <textarea id="caracter" rows="3" placeholder="Ej. Muy activo, le gusta jugar" required></textarea>
             </div>
             <div class="form-group">
-                <label>Foto de la mascota (Sube una imagen PNG o JPG):</label>
+                <label>Foto de la mascota (PNG o JPG):</label>
                 <input type="file" id="fotoArchivo" accept="image/png, image/jpeg" required>
             </div>
             <button type="submit">Publicar Mascota</button>
@@ -47,6 +45,13 @@
     </div>
 
     <script>
+        // Verificar que sea refugio o admin
+        const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
+        if (!usuarioActivo || (usuarioActivo.tipo !== 'Refugio' && usuarioActivo.tipo !== 'Admin')) {
+            alert("Acceso denegado. Solo los refugios pueden publicar mascotas.");
+            window.location.href = 'index.html';
+        }
+
         function guardarMascota(event) {
             event.preventDefault();
 
@@ -60,14 +65,12 @@
             if (archivo) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const base64Image = e.target.result; // Convierte la imagen a código para guardarla
-
                     const nuevaMascota = {
                         nombre,
                         especie,
                         edad,
                         caracter,
-                        foto: base64Image
+                        foto: e.target.result
                     };
 
                     let mascotas = JSON.parse(localStorage.getItem('patitas_mascotas')) || [];
@@ -75,7 +78,7 @@
                     localStorage.setItem('patitas_mascotas', JSON.stringify(mascotas));
 
                     alert('¡Mascota publicada con éxito!');
-                    window.location.href = 'index.html'; // Regresar a la galería
+                    window.location.href = 'index.html';
                 };
                 reader.readAsDataURL(archivo);
             }
