@@ -9,18 +9,17 @@
     <header>
         <h1>🐾 Patitas</h1>
         <nav id="navBar">
-            <a href="index.html">Inicio</a>
-            <a href="publicar.html" id="linkPublicar" style="display:none;">Publicar Mascota</a>
-            <span id="userSpan"></span>
-            <a href="login.html" id="linkLogin">Iniciar Sesión</a>
-            <a href="#" id="linkLogout" onclick="cerrarSesion()" style="display:none;">Cerrar Sesión</a>
+            <a href="index.html" class="nav-btn">Inicio</a>
+            <a href="publicar.html" id="linkPublicar" class="nav-btn" style="display:none;">Publicar Mascota</a>
+            <span id="userSpan" style="font-weight: bold; margin-left: 10px;"></span>
+            <a href="login.html" id="linkLogin" class="nav-btn">Iniciar Sesión</a>
+            <a href="#" id="linkLogout" class="nav-btn nav-logout" onclick="cerrarSesion()" style="display:none;">Cerrar Sesión</a>
         </nav>
     </header>
 
     <div class="container">
         <h2>Mascotas buscando un hogar</h2>
         
-        <!-- Filtros -->
         <div class="filtros-box">
             <label for="filtroEspecie"><strong>Filtrar por especie:</strong></label>
             <select id="filtroEspecie" onchange="filtrarMascotas()">
@@ -30,7 +29,6 @@
             </select>
         </div>
 
-        <!-- Contenedor dinámico de mascotas -->
         <div class="grid-mascotas" id="gridMascotas"></div>
     </div>
 
@@ -70,14 +68,16 @@
 
             if (usuarioActivo) {
                 linkLogin.style.display = 'none';
-                linkLogout.style.display = 'inline';
-                userSpan.textContent = `Hola, ${usuarioActivo.nombre} (${usuarioActivo.tipo})`;
+                linkLogout.style.display = 'inline-block';
+                // Solo mostrar el primer nombre
+                const primerNombre = usuarioActivo.nombre.trim().split(' ')[0];
+                userSpan.textContent = primerNombre;
                 
                 if (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin') {
-                    linkPublicar.style.display = 'inline';
+                    linkPublicar.style.display = 'inline-block';
                 }
             } else {
-                linkLogin.style.display = 'inline';
+                linkLogin.style.display = 'inline-block';
                 linkLogout.style.display = 'none';
                 userSpan.textContent = '';
                 linkPublicar.style.display = 'none';
@@ -98,7 +98,6 @@
             lista.forEach((m, index) => {
                 let botonesHTML = `<button class="btn-adoptar" onclick="solicitarAdopcion('${m.nombre}')">Solicitar Adopción</button>`;
                 
-                // Si es refugio o admin, puede eliminar
                 if (usuarioActivo && (usuarioActivo.tipo === 'Refugio' || usuarioActivo.tipo === 'Admin')) {
                     botonesHTML += `<button class="btn-eliminar" onclick="eliminarMascota(${index})">Eliminar (Admin)</button>`;
                 }
@@ -135,12 +134,11 @@
         function solicitarAdopcion(nombreMascota) {
             const usuarioActivo = JSON.parse(localStorage.getItem('patitas_usuario_activo'));
             if (!usuarioActivo) {
-                alert("Debes iniciar sesión para poder solicitar una adopción y que el refugio pueda contactarte.");
+                alert("Debes iniciar sesión para poder solicitar una adopción.");
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Guardar solicitud
             let solicitudes = JSON.parse(localStorage.getItem('patitas_solicitudes')) || [];
             solicitudes.push({
                 mascota: nombreMascota,
@@ -150,7 +148,7 @@
             });
             localStorage.setItem('patitas_solicitudes', JSON.stringify(solicitudes));
 
-            alert(`¡Solicitud enviada con éxito, ${usuarioActivo.nombre}! El refugio se pondrá en contacto contigo a través de ${usuarioActivo.email}.`);
+            alert("Solicitud enviada. El administrador evaluará tu perfil para la adopción.");
         }
 
         function eliminarMascota(index) {
